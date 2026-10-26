@@ -16,6 +16,13 @@ const requestSchema = new mongoose.Schema(
       type: String,
       enum: ['PENDING', 'APPROVED', 'REJECTED', 'RETURNED', 'CANCELLED'],
       default: 'PENDING'
+    },
+
+    loanDays: {
+      type: Number,
+      min: [1, 'Loan days must be at least 1'],
+      max: [14, 'Loan days must be at most 14'],
+      default: 7
     }
   },
   { timestamps: true }

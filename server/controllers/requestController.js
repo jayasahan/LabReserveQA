@@ -27,9 +27,18 @@ function populateRequest(query) {
 async function createRequest(req, res) {
   if (!studentOnly(req, res)) return
 
-  const { equipmentId } = req.body
+  const { equipmentId, loanDays } = req.body
   if (!equipmentId || !isValidId(equipmentId)) {
     return res.status(400).json({ message: 'A valid equipment ID is required' })
+  }
+
+  // Optional (default 7). If sent, it must be a whole number from 1 to 14.
+  let days = 7
+  if (loanDays !== undefined) {
+    if (!Number.isInteger(loanDays) || loanDays < 1 || loanDays > 14) {
+      return res.status(400).json({ message: 'Loan days must be a whole number from 1 to 14' })
+    }
+    days = loanDays
   }
 
   try {
@@ -52,7 +61,8 @@ async function createRequest(req, res) {
       const request = await Request.create({
         student: req.user._id,
         equipment: claimedEquipment._id,
-        status: 'PENDING'
+        status: 'PENDING',
+        loanDays: days
       })
       const populatedRequest = await populateEquipment(Request.findById(request._id))
       return res.status(201).json({ request: populatedRequest })

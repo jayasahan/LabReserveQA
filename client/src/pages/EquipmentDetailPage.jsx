@@ -12,6 +12,7 @@ function EquipmentDetailPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [requestMessage, setRequestMessage] = useState('')
   const [isRequesting, setIsRequesting] = useState(false)
+  const [loanDays, setLoanDays] = useState('7')
 
   useEffect(() => {
     fetchEquipmentById(id)
@@ -40,7 +41,7 @@ function EquipmentDetailPage() {
     setRequestMessage('')
     setIsRequesting(true)
     try {
-      await createRequest(equipment._id)
+      await createRequest(equipment._id, Number(loanDays))
       setEquipment((currentEquipment) => ({ ...currentEquipment, status: 'REQUESTED' }))
       setRequestMessage('Request submitted successfully.')
     } catch (error) {
@@ -74,6 +75,7 @@ function EquipmentDetailPage() {
           </div>
           {errorMessage && <p className="form-error">{errorMessage}</p>}
           {requestMessage && <p className="form-message">{requestMessage}</p>}
+          {canRequest && (<label className="form-group">Loan period (days, 1-14)<input type="number" min="1" max="14" step="1" value={loanDays} onChange={(e) => setLoanDays(e.target.value)} /></label>)}
           {canRequest && <button className="button button-primary" type="button" disabled={isRequesting} onClick={handleRequest}>{isRequesting ? 'Requesting...' : 'Request equipment'}</button>}
         </article>
       </section>

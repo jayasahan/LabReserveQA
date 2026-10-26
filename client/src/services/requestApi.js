@@ -6,11 +6,11 @@ async function readResponse(response) {
   return data
 }
 
-export async function createRequest(equipmentId) {
+export async function createRequest(equipmentId, loanDays) {
   const response = await fetch(`${API_URL}/requests`, {
     method: 'POST',
     headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
-    body: JSON.stringify({ equipmentId })
+    body: JSON.stringify({ equipmentId, loanDays })
   })
   const data = await readResponse(response)
   return data.request
