@@ -47,6 +47,11 @@ async function register(req, res) {
       return res.status(409).json({ message: 'An account with that email already exists' })
     }
 
+    if (error.name === 'ValidationError') {
+      const firstMessage = Object.values(error.errors || {})[0]?.message || 'Please provide valid registration details'
+      return res.status(400).json({ message: firstMessage })
+    }
+
     return res.status(500).json({ message: 'Unable to register at this time' })
   }
 }
