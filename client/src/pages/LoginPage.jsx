@@ -46,6 +46,7 @@ function LoginPage() {
         <div className="auth-links">
           <Link to="/register">New student? Create an account</Link>
           <Link to="/admin">Admin sign in</Link>
+          <span className="muted-text">Admins use this login too</span>
         </div>
       </section>
     </main>
