@@ -28,6 +28,10 @@ async function register(req, res) {
       return res.status(400).json({ message: 'Name, email, and password are required' })
     }
 
+    if (typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' })
+    }
+
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() })
     if (existingUser) {
       return res.status(409).json({ message: 'An account with that email already exists' })
@@ -41,6 +45,11 @@ async function register(req, res) {
   } catch (error) {
     if (error.code === 11000) {
       return res.status(409).json({ message: 'An account with that email already exists' })
+    }
+
+    if (error.name === 'ValidationError') {
+      const firstMessage = Object.values(error.errors || {})[0]?.message || 'Please provide valid registration details'
+      return res.status(400).json({ message: firstMessage })
     }
 
     return res.status(500).json({ message: 'Unable to register at this time' })
