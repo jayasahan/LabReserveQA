@@ -850,3 +850,34 @@ course fundamentals > production-scale architecture
 ```
 
 LabReserve is intentionally a small, polished, explainable MERN application.
+
+---
+
+# 26. Coding-agent governance
+
+These are repository-wide instructions for coding agents. They guide agent behaviour; they are not a technical guarantee that every external tool will obey them.
+
+Agents must:
+
+* make only changes within the requested scope
+* inspect existing files before editing them
+* run relevant checks where possible and report results truthfully
+* avoid editing unrelated files
+* avoid committing generated artifacts unless explicitly requested
+* never claim that tests, builds, deployments, or API calls were executed if they were not
+* never include secrets or real credentials in source code, example environment files, reports, or test artifacts
+* keep generated coverage reports and ZIP files out of commits unless they are explicitly required as QA evidence
+
+Agents must ask before taking destructive, security-sensitive, or repository-administration actions.
+
+Agents must leave Git changes for the human maintainer to review. They must not create commits, push branches, or merge pull requests.
+
+Agents must not add chatbot, AI-agent, bot, or service identities as GitHub collaborators, outside collaborators, team members, or reviewers without explicit authorization.
+
+Agents must not add `Co-authored-by` attribution for an agent or deliberately alter commit author metadata to attribute work to an agent.
+
+Agents must not change repository permissions, secrets, branch protections, or other repository settings without explicit approval.
+
+These files express instructions and expectations for coding assistants. They cannot technically guarantee that every external agent or tool will obey them. GitHub permissions, branch protection, secret settings, and other repository controls are separate enforcement mechanisms.
+
+When a human maintainer performs a Git commit, GitHub may display that human account as the commit author. These instructions do not claim to prevent that normal GitHub behaviour.
