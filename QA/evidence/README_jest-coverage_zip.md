@@ -1,0 +1,1 @@
+This README file provides information about the Jest coverage report for the QA evidence. The coverage report is generated using Jest, a JavaScript testing framework, and is packaged in a zip file for easy distribution and review.
