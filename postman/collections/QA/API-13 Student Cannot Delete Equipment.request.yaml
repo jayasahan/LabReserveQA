@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment/6ad5be4a91572472c5f73e10"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{studentToken}}"
+order: 14000

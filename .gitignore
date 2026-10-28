@@ -7,6 +7,9 @@ dist/
 npm-debug.log*
 *.log
 
+# Generated Newman test reports
+postman/reports/*.xml
+
 # AI and editor metadata (non-essential project files)
 .copilot/
 .claude/

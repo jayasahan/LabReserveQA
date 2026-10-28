@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "QA Read-Only Regression",
+    "_postman_id": "labreserve-qa-read-only-regression",
+    "description": "Read-only and authentication regression checks. API-04 and API-20 require equipmentId at runtime.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Read-Only Regression",
+      "item": [
+        {
+          "name": "API Health",
+          "request": {"method":"GET","header":[],"url":"{{baseUrl}}/api/health"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Health status is 200\", () => pm.response.to.have.status(200));","pm.test(\"Health response identifies the API\", () => { pm.expect(response.status).to.eql(\"ok\"); pm.expect(response.app).to.eql(\"LabReserve API\"); });"]}}]
+        },
+        {
+          "name":"API-01 Admin Login",
+          "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/api/auth/login"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Admin login returns 200\", () => pm.response.to.have.status(200));","pm.test(\"Login returns an ADMIN user and token\", () => { pm.expect(response.user.role).to.eql(\"ADMIN\"); pm.expect(response.token).to.be.a(\"string\").and.not.empty; });","if (response.token && response.user && response.user.role === \"ADMIN\") pm.environment.set(\"adminToken\", response.token);"]}}]
+        },
+        {
+          "name":"API-02 List Equipment",
+          "request":{"method":"GET","header":[],"auth":{"type":"bearer","bearer":[{"key":"token","value":"{{adminToken}}","type":"string"}]},"url":"{{baseUrl}}/api/equipment"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Admin list returns 200\", () => pm.response.to.have.status(200));","pm.test(\"Admin list contains an equipment array\", () => pm.expect(response.equipment).to.be.an(\"array\"));"]}}]
+        },
+        {
+          "name":"API-03 Student Login",
+          "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/api/auth/login"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Student login returns 200\", () => pm.response.to.have.status(200));","pm.test(\"Login returns a STUDENT user and token\", () => { pm.expect(response.user.role).to.eql(\"STUDENT\"); pm.expect(response.token).to.be.a(\"string\").and.not.empty; });","if (response.token && response.user && response.user.role === \"STUDENT\") pm.environment.set(\"studentToken\", response.token);"]}}]
+        },
+        {
+          "name":"API-04 Get Equipment by ID",
+          "request":{"method":"GET","header":[],"auth":{"type":"bearer","bearer":[{"key":"token","value":"{{adminToken}}","type":"string"}]},"url":"{{baseUrl}}/api/equipment/{{equipmentId}}"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Equipment lookup returns 200\", () => pm.response.to.have.status(200));","pm.test(\"Lookup returns the supplied equipment ID\", () => pm.expect(String(response.equipment._id)).to.eql(pm.environment.get(\"equipmentId\")));"]}}]
+        },
+        {
+          "name":"API-11 List Equipment Without Authentication",
+          "request":{"method":"GET","header":[],"url":"{{baseUrl}}/api/equipment"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Unauthenticated listing returns 401\", () => pm.response.to.have.status(401));","pm.test(\"Unauthenticated response is safe\", () => pm.expect(response.message).to.eql(\"Authentication required\"));"]}}]
+        },
+        {
+          "name":"API-15 Invalid Login Credentials",
+          "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"DefinitelyWrongPassword123!\"\n}","options":{"raw":{"language":"json"}}},"url":"{{baseUrl}}/api/auth/login"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Invalid credentials return 401\", () => pm.response.to.have.status(401));","pm.test(\"Invalid credentials return the normal login error\", () => pm.expect(response.message).to.eql(\"Invalid email or password\"));"]}}]
+        },
+        {
+          "name":"API-19 Student List Equipment",
+          "request":{"method":"GET","header":[],"auth":{"type":"bearer","bearer":[{"key":"token","value":"{{studentToken}}","type":"string"}]},"url":"{{baseUrl}}/api/equipment"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Student list returns 200\", () => pm.response.to.have.status(200));","pm.test(\"Student list contains an equipment array\", () => pm.expect(response.equipment).to.be.an(\"array\"));"]}}]
+        },
+        {
+          "name":"API-20 Student Get Equipment by ID",
+          "request":{"method":"GET","header":[],"auth":{"type":"bearer","bearer":[{"key":"token","value":"{{studentToken}}","type":"string"}]},"url":"{{baseUrl}}/api/equipment/{{equipmentId}}"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Student equipment lookup returns 200\", () => pm.response.to.have.status(200));","pm.test(\"Student receives the supplied equipment ID\", () => pm.expect(String(response.equipment._id)).to.eql(pm.environment.get(\"equipmentId\")));"]}}]
+        },
+        {
+          "name":"API-29 List Equipment Without Token",
+          "request":{"method":"GET","header":[],"url":"{{baseUrl}}/api/equipment"},
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["const response = pm.response.json();","pm.test(\"Missing token returns 401\", () => pm.response.to.have.status(401));","pm.test(\"Missing token returns the authentication message\", () => pm.expect(response.message).to.eql(\"Authentication required\"));"]}}]
+        }
+      ]
+    }
+  ],
+  "variable":[
+    {"key":"baseUrl","value":""},
+    {"key":"adminEmail","value":""},
+    {"key":"adminPassword","value":""},
+    {"key":"studentEmail","value":""},
+    {"key":"studentPassword","value":""},
+    {"key":"adminToken","value":""},
+    {"key":"studentToken","value":""},
+    {"key":"equipmentId","value":""}
+  ]
+}

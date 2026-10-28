@@ -1,0 +1,35 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Student Unauthorized Test\",\r
+
+    \  \"category\": \"Testing\",\r
+
+    \  \"assetCode\": \"STUDENT-TEST-001\",\r
+
+    \  \"description\": \"Testing student permissions\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{studentToken}}"
+scripts:
+  - type: afterResponse
+    code: |
+      const response = pm.response.json();
+
+      pm.test("Student cannot create equipment", function () {
+        pm.response.to.have.status(403);
+      });
+
+      pm.test("Forbidden response explains the required role", function () {
+        pm.expect(response.message).to.eql("Admin access required");
+      });
+    language: text/javascript
+order: 13000

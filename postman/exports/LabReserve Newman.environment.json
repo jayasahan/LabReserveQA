@@ -1,0 +1,31 @@
+{
+  "id": "ce81836f-e559-499b-b00d-6ba78c1d61a0",
+  "name": "LabReserve Newman",
+  "_postman_variable_scope": "environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "studentToken",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "equipmentId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ]
+}

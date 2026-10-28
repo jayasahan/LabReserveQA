@@ -1,0 +1,22 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment/6ad5be4a91572472c5f73e10"
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Unauthorized Student Update\",\r
+
+    \  \"category\": \"Testing\",\r
+
+    \  \"assetCode\": \"QA-TEST-001\",\r
+
+    \  \"description\": \"Testing student permissions\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{studentToken}}"
+order: 15000

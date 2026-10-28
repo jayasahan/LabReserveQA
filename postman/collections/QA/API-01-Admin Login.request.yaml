@@ -1,0 +1,42 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"admin@labreserve.local\",\r
+
+    \  \"password\": \"choose_a_private_password\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Admin login status is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"User has ADMIN role\", function () {\r
+
+      \    pm.expect(response.user.role).to.eql(\"ADMIN\");\r
+
+      });\r
+
+      \r
+
+      if (response.token && response.user.role === \"ADMIN\") {\r
+
+      \    pm.environment.set(\"adminToken\", response.token);\r
+
+      }"
+    language: text/javascript
+order: 2000

@@ -1,0 +1,22 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment/{{equipmentId}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+scripts:
+  - type: afterResponse
+    code: |
+      const response = pm.response.json();
+
+      pm.test("Created equipment can be retrieved", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Retrieved equipment matches the created equipment", function () {
+        pm.expect(response.equipment._id).to.eql(pm.environment.get("equipmentId"));
+      });
+    language: text/javascript
+order: 7001

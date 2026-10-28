@@ -1,0 +1,16 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Incomplete Test Equipment\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 23000

@@ -1,0 +1,35 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Duplicate Asset Test\",\r
+
+    \  \"category\": \"Testing\",\r
+
+    \  \"assetCode\": \"QA-TEST-001\",\r
+
+    \  \"description\": \"Testing duplicate asset code validation\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+scripts:
+  - type: afterResponse
+    code: |
+      const response = pm.response.json();
+
+      pm.test("Duplicate asset code returns 409", function () {
+        pm.response.to.have.status(409);
+      });
+
+      pm.test("Duplicate asset code returns the expected message", function () {
+        pm.expect(response.message).to.eql("An equipment item with that asset code already exists");
+      });
+    language: text/javascript
+order: 24000

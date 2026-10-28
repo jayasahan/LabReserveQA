@@ -1,0 +1,35 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"amal@gmail.com\",\r
+
+    \  \"password\": \"amal123\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: |
+      const response = pm.response.json();
+
+      pm.test("Student login status is 200", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("User has STUDENT role", function () {
+        pm.expect(response.user.role).to.eql("STUDENT");
+      });
+
+      pm.test("Student login returns a token", function () {
+        pm.expect(response.token).to.be.a("string").and.not.empty;
+      });
+
+      if (response.token && response.user && response.user.role === "STUDENT") {
+        pm.environment.set("studentToken", response.token);
+      }
+    language: text/javascript
+order: 4000
