@@ -2,7 +2,16 @@
 
 ## Scope
 
-This is the preliminary Postman/API automation plan for the Member 3 assignment. It covers authentication, equipment management, authorization, request workflow, and a later concurrency test. No Postman collection has been created yet.
+This is the Postman/API automation plan for the Member 3 assignment. It covers authentication, equipment management, authorization, request workflow, and a later concurrency test. Postman collection definitions now exist, but collection creation is separate from executing requests and from CI automation.
+
+The current collection artifacts are:
+
+- `postman/exports/QA-Smoke.postman_collection.json`: five-request smoke suite with local Newman/JUnit reporting.
+- `postman/exports/QA-ReadOnly-Regression.postman_collection.json`: ten-request read-only and authentication suite; `equipmentId` must be supplied at runtime.
+- `postman/exports/QA-Full-Regression.postman_collection.json`: API-01 through API-30 plus API Health, including controlled state-changing requests.
+- `postman/reports/QA-API-Test-Report.md`: historical API observations, not a new execution result.
+
+The smoke collection has been executed locally and its JUnit report covers only five requests. The read-only and full collections have been defined and inspected; their creation does not prove that their API requests have executed. Newman CI and a full isolated-database execution remain pending.
 
 ## 1. Discovered API Routes
 

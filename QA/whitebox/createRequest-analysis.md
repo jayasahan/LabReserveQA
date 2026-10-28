@@ -211,7 +211,7 @@ Nine independent paths are sufficient for the selected CFG basis set, but they d
 - Test implementation: **COMPLETE**; first Jest version executed with 14 passing tests.
 - Initial coverage measurement and interpretation: **COMPLETE**; whole-file coverage was reported and `createRequest()` was analysed separately.
 - API automation: **NOT STARTED**
-- CI: **NOT STARTED**
+- CI workflow: **ADDED; successful GitHub Actions run not yet verified**
 - SonarQube: **NOT STARTED**
 
 ## 12. Next Step

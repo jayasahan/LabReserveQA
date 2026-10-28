@@ -6,7 +6,7 @@ Member 3 is responsible for white-box testing, test automation, coverage measure
 
 ## Current Phase
 
-White-box testing and initial coverage analysis.
+White-box testing, local coverage evidence, and initial CI workflow preparation.
 
 ## Completed
 
@@ -16,6 +16,9 @@ White-box testing and initial coverage analysis.
 - [x] Completed the white-box test-case design.
 - [x] Implemented and executed the first Jest white-box test suite.
 - [x] Measured and interpreted initial statement and branch coverage.
+- [x] Added a GitHub Actions workflow to run Jest with coverage and upload a coverage artifact.
+- [x] Executed the local Jest suite with coverage: 1 test suite and 14 tests passed.
+- [x] Created Postman smoke, read-only, and full-regression collection definitions.
 
 ## In Progress
 
@@ -25,9 +28,9 @@ White-box testing and initial coverage analysis.
 ## Not Started
 
 - [ ] Improve whole-file coverage.
-- [ ] Build API automation.
+- [ ] Execute the Postman smoke and read-only collections against a controlled local setup.
 - [ ] Add a concurrency test.
-- [ ] Configure GitHub Actions CI/CD.
+- [ ] Confirm a successful GitHub Actions workflow run and download its coverage artifact.
 - [ ] Configure SonarQube.
 - [ ] Complete technical integration of QA outputs.
 
@@ -37,12 +40,18 @@ White-box testing and initial coverage analysis.
 - `QA/whitebox/createRequest-test-cases.md`
 - `QA/whitebox/coverage-report.md`
 - `server/tests/requestController.createRequest.test.js`
+- `postman/exports/QA-Smoke.postman_collection.json`
+- `postman/exports/QA-ReadOnly-Regression.postman_collection.json`
+- `postman/exports/QA-Full-Regression.postman_collection.json`
+- `postman/reports/QA-API-Test-Report.md`
+- `QA/evidence/jest-coverage-2026-10-29.zip`
 
 ## Next Immediate Task
 
 1. Review the uncovered controller functions.
 2. Decide which additional controller tests are required for whole-file coverage.
-3. Keep CI and SonarQube as later stages.
+3. Confirm the GitHub Actions result and retain its artifact separately from the local snapshot.
+4. Keep Newman CI, SonarQube, concurrency testing, and full state-changing API execution pending until their prerequisites are available.
 
 ## Learning Notes
 
