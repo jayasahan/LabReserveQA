@@ -1,0 +1,22 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Invalid Category Test\",\r
+
+    \  \"category\": \"DefinitelyNotARealCategory\",\r
+
+    \  \"assetCode\": \"QA-INVALID-CATEGORY-001\",\r
+
+    \  \"description\": \"Testing category validation\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 28000

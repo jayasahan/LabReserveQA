@@ -1,0 +1,1145 @@
+{
+  "info": {
+    "name": "QA",
+    "_postman_id": "2b96ccd9-718a-45d4-a13b-85077ee09bcc",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "API Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "health"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Health check status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Health check reports the API is running\", function () {",
+              "  pm.expect(response.status).to.eql(\"ok\");",
+              "  pm.expect(response.app).to.eql(\"LabReserve API\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 01 Admin Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"admin@labreserve.local\",\r\n  \"password\": \"choose_a_private_password\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Admin login status is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"User has ADMIN role\", function () {",
+              "    pm.expect(response.user.role).to.eql(\"ADMIN\");",
+              "});",
+              "",
+              "if (response.token && response.user.role === \"ADMIN\") {",
+              "    pm.environment.set(\"adminToken\", response.token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 02 List Equipment",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Admin equipment listing status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Admin equipment listing returns an array\", function () {",
+              "  pm.expect(response.equipment).to.be.an(\"array\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 03 Student Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"amal@gmail.com\",\r\n  \"password\": \"amal123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Student login status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"User has STUDENT role\", function () {",
+              "  pm.expect(response.user.role).to.eql(\"STUDENT\");",
+              "});",
+              "",
+              "pm.test(\"Student login returns a token\", function () {",
+              "  pm.expect(response.token).to.be.a(\"string\").and.not.empty;",
+              "});",
+              "",
+              "if (response.token && response.user && response.user.role === \"STUDENT\") {",
+              "  pm.environment.set(\"studentToken\", response.token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 04 Get Equipment by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ad5be4a91572472c5f73e10",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ad5be4a91572472c5f73e10"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 05 Create Equipment",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"QA Test Equipment\",\r\n  \"category\": \"Testing\",\r\n  \"assetCode\": \"QA-TEST-001\",\r\n  \"description\": \"Equipment created for API testing\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Equipment creation status is 201\", function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Created equipment has an ID and is available\", function () {",
+              "  pm.expect(response.equipment._id).to.be.a(\"string\").and.not.empty;",
+              "  pm.expect(response.equipment.status).to.eql(\"AVAILABLE\");",
+              "});",
+              "",
+              "if (response.equipment && response.equipment._id) {",
+              "  pm.environment.set(\"equipmentId\", response.equipment._id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 06 Verify Created Equipment",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/{{equipmentId}}",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "{{equipmentId}}"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Created equipment can be retrieved\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retrieved equipment matches the created equipment\", function () {",
+              "  pm.expect(response.equipment._id).to.eql(pm.environment.get(\"equipmentId\"));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 07 Update Equipment",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ae1dd40ce545a2744d8dfa8",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ae1dd40ce545a2744d8dfa8"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"QA Test Equipment Updated\",\r\n  \"category\": \"Testing\",\r\n  \"assetCode\": \"QA-TEST-001\",\r\n  \"description\": \"Updated equipment for API testing\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 08 Verify Updated Equipment",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ae1dd40ce545a2744d8dfa8",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ae1dd40ce545a2744d8dfa8"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 09 Delete Test Equipment",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ae1dd40ce545a2744d8dfa8",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ae1dd40ce545a2744d8dfa8"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 10 Verify Deleted Equipment",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ae1dd40ce545a2744d8dfa8",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ae1dd40ce545a2744d8dfa8"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 11 Test Unauthorized Access",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 12 Test Student Access to Admin Only Operations",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{studentToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Student Unauthorized Test\",\r\n  \"category\": \"Testing\",\r\n  \"assetCode\": \"STUDENT-TEST-001\",\r\n  \"description\": \"Testing student permissions\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Student cannot create equipment\", function () {",
+              "  pm.response.to.have.status(403);",
+              "});",
+              "",
+              "pm.test(\"Forbidden response explains the required role\", function () {",
+              "  pm.expect(response.message).to.eql(\"Admin access required\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 13 Student Cannot Delete Equipment",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ad5be4a91572472c5f73e10",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ad5be4a91572472c5f73e10"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{studentToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 14 Student Cannot Update Equipment",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ad5be4a91572472c5f73e10",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ad5be4a91572472c5f73e10"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{studentToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Unauthorized Student Update\",\r\n  \"category\": \"Testing\",\r\n  \"assetCode\": \"QA-TEST-001\",\r\n  \"description\": \"Testing student permissions\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 15 Invalid Login Credentials",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"admin@labreserve.local\",\r\n  \"password\": \"DefinitelyWrongPassword123!\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Invalid credentials return 401\", function () {",
+              "  pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Invalid credentials return a safe error message\", function () {",
+              "  pm.expect(response.message).to.eql(\"Invalid email or password\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 16 Login Missing Password",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"admin@labreserve.local\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 17 Login Missing Email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"password\": \"DefinitelyWrongPassword123!\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 18 Login Invalid Email Format",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"not-an-email\",\r\n  \"password\": \"SomePassword123!\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "// The current login controller does not validate email format before lookup.",
+              "pm.test(\"Invalid email format currently returns 401\", function () {",
+              "  pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Invalid email format returns the normal login error\", function () {",
+              "  pm.expect(response.message).to.eql(\"Invalid email or password\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 19 Student List Equipment",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{studentToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Student equipment listing status is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Student equipment listing returns an array\", function () {",
+              "  pm.expect(response.equipment).to.be.an(\"array\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 20 Student Get Equipment By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/6ad5be4a91572472c5f73e10",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "6ad5be4a91572472c5f73e10"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{studentToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 21 Get Equipment Invalid ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment/not-a-valid-id",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment",
+            "not-a-valid-id"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 22 Create Equipment Missing Fields",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Incomplete Test Equipment\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 23 Duplicate Asset Code",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Duplicate Asset Test\",\r\n  \"category\": \"Testing\",\r\n  \"assetCode\": \"QA-TEST-001\",\r\n  \"description\": \"Testing duplicate asset code validation\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const response = pm.response.json();",
+              "",
+              "pm.test(\"Duplicate asset code returns 409\", function () {",
+              "  pm.response.to.have.status(409);",
+              "});",
+              "",
+              "pm.test(\"Duplicate asset code returns the expected message\", function () {",
+              "  pm.expect(response.message).to.eql(\"An equipment item with that asset code already exists\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 24 Verify Duplicate Asset Codes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 25 Create Equipment Missing Asset Code",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Missing Asset Code Test\",\r\n  \"category\": \"Testing\",\r\n  \"description\": \"Testing required asset code validation\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 26 Create Equipment Empty Name",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"\",\r\n  \"category\": \"Testing\",\r\n  \"assetCode\": \"QA-EMPTY-NAME-001\",\r\n  \"description\": \"Testing empty name validation\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 27 Create Equipment Invalid Category",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Invalid Category Test\",\r\n  \"category\": \"DefinitelyNotARealCategory\",\r\n  \"assetCode\": \"QA-INVALID-CATEGORY-001\",\r\n  \"description\": \"Testing category validation\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 28 Create Equipment Whitespace Name",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"   \",\r\n  \"category\": \"Testing\",\r\n  \"assetCode\": \"QA-WHITESPACE-001\",\r\n  \"description\": \"Testing whitespace-only name\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "API 29 List Equipment Without Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/equipment",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "equipment"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "{{baseUrl}}/api/auth/login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [],
+          "path": [
+            "{{baseUrl}}",
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"student@labreserve.local\",\r\n  \"password\": \"DefinitelyWrongPassword123!\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": []
+}

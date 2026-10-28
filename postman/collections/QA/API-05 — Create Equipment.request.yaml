@@ -1,0 +1,40 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"QA Test Equipment\",\r
+
+    \  \"category\": \"Testing\",\r
+
+    \  \"assetCode\": \"QA-TEST-001\",\r
+
+    \  \"description\": \"Equipment created for API testing\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+scripts:
+  - type: afterResponse
+    code: |
+      const response = pm.response.json();
+
+      pm.test("Equipment creation status is 201", function () {
+        pm.response.to.have.status(201);
+      });
+
+      pm.test("Created equipment has an ID and is available", function () {
+        pm.expect(response.equipment._id).to.be.a("string").and.not.empty;
+        pm.expect(response.equipment.status).to.eql("AVAILABLE");
+      });
+
+      if (response.equipment && response.equipment._id) {
+        pm.environment.set("equipmentId", response.equipment._id);
+      }
+    language: text/javascript
+order: 6000

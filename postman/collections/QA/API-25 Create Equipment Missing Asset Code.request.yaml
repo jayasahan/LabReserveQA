@@ -1,0 +1,20 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipment"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"name\": \"Missing Asset Code Test\",\r
+
+    \  \"category\": \"Testing\",\r
+
+    \  \"description\": \"Testing required asset code validation\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 26000

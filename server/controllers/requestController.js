@@ -25,10 +25,11 @@ function populateRequest(query) {
 }
 
 async function createRequest(req, res) {
-  if (!studentOnly(req, res)) return
+  if (!studentOnly(req, res)) return     //student authorization (TRUE  → continue ,FALSE → 403)
+
 
   const { equipmentId, loanDays } = req.body
-  if (!equipmentId || !isValidId(equipmentId)) {
+  if (!equipmentId || !isValidId(equipmentId)) {      //Equipment ID validity
     return res.status(400).json({ message: 'A valid equipment ID is required' })
   }
 

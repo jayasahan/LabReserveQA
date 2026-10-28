@@ -1,0 +1,28 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"not-an-email\",\r
+
+    \  \"password\": \"SomePassword123!\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: |
+      const response = pm.response.json();
+
+      // The current login controller does not validate email format before lookup.
+      pm.test("Invalid email format currently returns 401", function () {
+        pm.response.to.have.status(401);
+      });
+
+      pm.test("Invalid email format returns the normal login error", function () {
+        pm.expect(response.message).to.eql("Invalid email or password");
+      });
+    language: text/javascript
+order: 19000
