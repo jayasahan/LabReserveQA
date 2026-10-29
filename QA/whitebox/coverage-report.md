@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-This report records the latest local Jest coverage measurement for the Member 3 white-box target, `createRequest()` in `server/controllers/requestController.js`. The test suite uses mocked Mongoose models and does not require MongoDB.
+This report records the local Jest coverage measurement for the Member 3 white-box target, `createRequest()` in `server/controllers/requestController.js`. The test suite uses mocked Mongoose models and does not connect to MongoDB. The measured source and test file revision is commit `b282639` (`b2826399c82e7610144a8d5269a343801299071f`).
 
 ## Test Command and Results
 
@@ -19,24 +19,24 @@ Test Suites: 1 passed, 1 total
 Tests:       14 passed, 14 total
 ```
 
-Jest coverage generation completed locally. The generated report is preserved as the local snapshot `QA/evidence/jest-coverage-2026-10-29.zip`. It is not GitHub Actions evidence.
+Jest coverage generation completed locally. The generated report is preserved as the local snapshot `QA/evidence/jest-coverage-2026-10-29.zip`. It is not GitHub Actions evidence. The current local `server/coverage/` output was inspected without rerunning Jest and reports the same whole-file figures below.
 
 ## Whole-File Coverage
 
 | Metric | Result |
 |---|---:|
 | Statements | 33.64% |
-| Branches | 31.81% (Jest terminal summary) |
+| Branches | 31.81% |
 | Functions | 33.33% |
 | Lines | 35% |
 
 These percentages describe the complete `requestController.js` file.
 
-The generated `server/coverage/lcov.info` records 21 covered branches out of 66 (`31.82%` when recalculated from those counts), 35 covered lines out of 100 (`35%`), 4 covered functions out of 12 (`33.33%`), and the Jest terminal summary reports 33.64% statements. The small branch difference is retained as an evidence-format rounding discrepancy.
+The generated coverage data records 36 of 107 statements, 21 of 66 branches, 4 of 12 functions, and 35 of 100 lines covered. Jest's report displays branch coverage as 31.81% (it truncates the repeating decimal); the same branch count rounds to 31.82% under conventional two-decimal rounding. This is a display-rounding difference, not a different test result.
 
 ## Whole-File versus Target-Function Coverage
 
-The generated coverage data shows 100% statement, branch, function, and line coverage for `createRequest()` when scoped to that function.
+Inspection of the generated coverage map shows 100% statement, branch, function, and line coverage for `createRequest()` when counts are restricted to that function's source range. This is a function-scoped calculation, not the whole-file percentage.
 
 This does not conflict with the lower whole-file percentages. The current tests execute `createRequest()` and its directly used helpers, but most of the other controller functions are not called by this suite.
 
@@ -58,4 +58,4 @@ The nine documented independent paths provide a basis set for the verified `crea
 
 ## Recommended Next Step
 
-Keep the `createRequest()` suite as the verified white-box baseline, then plan additional controller tests for the uncovered request-management functions if whole-file coverage is required. The GitHub Actions workflow is present and runs Jest with coverage, but a successful Actions run has not been confirmed in this repository audit. Newman CI, SonarQube, concurrency testing, and whole-file controller coverage remain pending.
+The white-box report contains the CFG, complexity calculation, nine independent paths, and their mapping to WB-01 through WB-09. Keep the selected function as the baseline; add controller tests only if the official rubric or a demonstrated correctness gap requires them. GitHub Actions run [#2](https://github.com/jayasahan/LabReserveQA/actions/runs/40759976311) completed successfully and uploaded `jest-coverage-2`; this is separate evidence from the local ZIP. The initial SonarQube scan and available project metrics are recorded in `QA/sonarqube/`; no post-fix scan has been run. Newman CI, concurrency testing, and final integrated evidence remain pending.

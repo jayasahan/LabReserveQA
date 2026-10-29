@@ -2,7 +2,7 @@
 
 ## Scope
 
-This is the Postman/API automation plan for the Member 3 assignment. It covers authentication, equipment management, authorization, request workflow, and a later concurrency test. Postman collection definitions now exist, but collection creation is separate from executing requests and from CI automation.
+This is the Postman/API automation plan for the Member 3 assignment. It covers authentication, equipment management, authorization, request workflow, and a later concurrency test. Postman collection definitions, actual API execution, and CI automation are separate deliverables and are tracked separately below.
 
 The current collection artifacts are:
 
@@ -11,7 +11,16 @@ The current collection artifacts are:
 - `postman/exports/QA-Full-Regression.postman_collection.json`: API-01 through API-30 plus API Health, including controlled state-changing requests.
 - `postman/reports/QA-API-Test-Report.md`: historical API observations, not a new execution result.
 
-The smoke collection has been executed locally and its JUnit report covers only five requests. The read-only and full collections have been defined and inspected; their creation does not prove that their API requests have executed. Newman CI and a full isolated-database execution remain pending.
+## Current Execution Evidence and Safety
+
+- **Smoke:** The existing `postman/reports/QA-Smoke-results.xml` records five request suites, 12 assertions, and zero failures from a local run. It covers only API Health and the four smoke requests; it is not evidence for API-01 through API-30 as a whole.
+- **Read-only/authentication subset:** `QA-ReadOnly-Regression.postman_collection.json` contains ten requests and 20 assertions: health, admin/student login, equipment list/get, unauthenticated listing, and invalid login. Login uses POST but the inspected controller only reads the user record and creates a JWT; it does not register users or mutate equipment. The recorded local JUnit result contains 10 request suites, 20 assertions, 0 failures, and 0 errors; see `postman/reports/QA-ReadOnly-Regression-results.xml` and `QA/api/api-regression-results.md`.
+- The exported Postman environment does not currently supply `baseUrl` or `equipmentId`. Provide those at runtime, along with admin/student credentials. API-04 and API-20 require a known existing equipment ID; do not substitute a guessed ID.
+- **Full regression:** The 30 numbered requests plus API Health are defined but have no new execution evidence. API-05 creates a disposable fixture, API-07 updates it, API-09 deletes it, and API-27 creates a separate record that persists unless the test database is discarded or that record is cleaned up. Other mutation-method negative/invalid requests assert rejection and should not change records if the API behaves as expected. Treat the suite as state-changing until safely run against isolated fixtures.
+- The Jest tests mock the `Equipment` and `Request` models and do not connect to MongoDB. The API server calls `mongoose.connect()` with `MONGODB_URI` before it listens, so any live API execution requires a configured database. No isolated API test database has been confirmed, and no database was connected during this audit.
+- GitHub Actions Jest workflow run [#2](https://github.com/jayasahan/LabReserveQA/actions/runs/40759976311) is verified successful and uploaded `jest-coverage-2`. The workflow runs Jest only; it does not run Newman. The initial local SonarQube scan and available measures are documented in `QA/sonarqube/`; Newman CI, concurrency testing, and final integrated API evidence remain pending. The official rubric's exact scope and evidence format still need confirmation.
+
+The official course rubric was not found as a separate file in this repository. Confirm which listed assignment items are graded requirements with the supplied assignment sheet or lecturer; do not treat an explicit requirement as optional, and do not add industry extras just to increase scope.
 
 ## 1. Discovered API Routes
 
@@ -101,7 +110,9 @@ Save created IDs such as `equipmentId` and `requestId` from response bodies for 
 
 ## 3. Preliminary Postman Test Cases
 
-| ID | Endpoint | Method | Preconditions | Request data | Expected status | Important response assertions | State assertion |
+The IDs in this early design table are provisional draft IDs and do not match the stable API-01 through API-30 identifiers in the current exported collection. Use the request names in the current collections and the historical API report for canonical IDs.
+
+| Draft ID | Endpoint | Method | Preconditions | Request data | Expected status | Important response assertions | State assertion |
 |---|---|---|---|---|---:|---|---|
 | API-01 Login/setup | `/api/auth/register`, `/api/auth/login`, `/api/auth/me` | POST, POST, GET | Database and JWT secret available; admin seeded; dedicated student credentials prepared | Register/login JSON with name, email, password; then Bearer token for `/me` | `201`, `200`, `200` | Registration/login returns `token` and correct `role`; `/me` returns the same user | Student is `STUDENT`; admin login returns `ADMIN` |
 | API-02 Equipment listing | `/api/equipment` | GET | Valid student or admin token; equipment exists | Optional `search` or `category` query | `200` | Response contains an `equipment` array and expected fields such as `name`, `assetCode`, `category`, and `status` | Listed status matches the stored workflow state |
@@ -131,6 +142,6 @@ The source uses an atomic equipment update matching `_id` and `status: 'AVAILABL
 ## 5. Uncertainties for Team Confirmation
 
 - The current database contents and whether the seeded admin/equipment records already exist were not verified.
-- The team must provide safe local admin credentials and a MongoDB test database/connection before Postman execution.
+- Before API execution, verify the target database and runtime credentials are safe. State-changing full-regression requests require an isolated test database and disposable fixtures; a read-only/authentication run still requires checking that its target is safe.
 - The exact Postman runner or execution environment for sending two near-simultaneous requests still needs to be selected.
 - Cleanup ownership should be agreed so API runs do not affect shared development data.

@@ -10,6 +10,7 @@
 |---|---|
 | File | `server/controllers/requestController.js` |
 | Function | `createRequest()` |
+| Source and test revision | `b2826399c82e7610144a8d5269a343801299071f` |
 | Description | Validates a student request, claims available equipment, creates a pending request, and returns an appropriate HTTP response. |
 
 The function uses `studentOnly()` and `isValidId()`, performs an atomic `findOneAndUpdate()` on available equipment, and rolls the equipment back to `AVAILABLE` if request creation fails.
@@ -193,9 +194,9 @@ Coverage describes which parts of the instrumented code were executed by the tes
 - **Function coverage** measures which functions were called.
 - **Line coverage** measures the percentage of executable source lines that ran.
 
-The reported percentages for the whole `requestController.js` file were 33.64% statements, 31.81% branches, 33.33% functions, and 35% lines. These totals include every controller function in the file, not only `createRequest()`.
+At source revision `b2826399c82e7610144a8d5269a343801299071f`, the generated report for the whole `requestController.js` file recorded 36/107 statements (33.64%), 21/66 branches (31.81% as displayed by Jest), 4/12 functions (33.33%), and 35/100 lines (35%). These totals include every controller function in the file, not only `createRequest()`.
 
-The function-scoped coverage reported by Codex for `createRequest()` was 100% for statements, branches, functions, and lines. This is different from the whole-file result because the current Jest suite targets only `createRequest()` and does not execute most of the other controller functions.
+The generated coverage map shows 100% statement, branch, function, and line coverage when restricted to `createRequest()`'s source range. This is different from the whole-file result because the current Jest suite targets `createRequest()` and does not execute most of the other controller functions. The 100% figure is a function-scoped calculation, not a claim that the full file is covered.
 
 The low whole-file result is therefore expected. Uncovered areas include `populateRequest()`, `getMyRequests()`, `cancelRequest()`, `getAllRequests()`, `approveRequest()`, `rejectRequest()`, `changePendingRequest()`, and `returnRequest()`.
 
@@ -210,10 +211,10 @@ Nine independent paths are sufficient for the selected CFG basis set, but they d
 - Independent path identification: **COMPLETE** under the final CFG convention.
 - Test implementation: **COMPLETE**; first Jest version executed with 14 passing tests.
 - Initial coverage measurement and interpretation: **COMPLETE**; whole-file coverage was reported and `createRequest()` was analysed separately.
-- API automation: **NOT STARTED**
-- CI workflow: **ADDED; successful GitHub Actions run not yet verified**
-- SonarQube: **NOT STARTED**
+- API automation: **COLLECTIONS DEFINED; API execution remains pending**
+- Jest CI workflow: **MERGED; GitHub Actions run #2 succeeded and uploaded `jest-coverage-2`**
+- SonarQube: **INITIAL LOCAL ANALYSIS COMPLETE; available metrics and findings documented under `QA/sonarqube/`; no post-fix scan**
 
 ## 12. Next Step
 
-Next, decide whether to extend testing to the remaining controller functions to improve whole-file coverage.
+The selected white-box analysis includes a Mermaid CFG, node and edge tables, both complexity calculations, nine independent paths, and a mapping from P1–P9 to WB-01–WB-09 in the test-case plan. Do not add tests solely to raise whole-file coverage. First compare remaining QA work with the official assignment rubric, then run API scenarios only with the required safe environment and fixtures.
