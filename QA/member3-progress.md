@@ -6,7 +6,7 @@ Member 3's QA work covers white-box analysis, test automation, coverage measurem
 
 ## Current Phase
 
-The initial SonarQube scan and its available evidence are documented. The next stage is the database-backed concurrency test, which remains blocked until an isolated test database and fixture cleanup are confirmed.
+The initial SonarQube scan and its available evidence are documented. The concurrency test has been implemented and locally exercised twice against an isolated test database, including the updated overlap validation. Full API regression and final integrated evidence remain pending.
 
 ## Completed
 
@@ -43,9 +43,9 @@ The selected `createRequest()` analysis includes the CFG, cyclomatic complexity,
 
 **Status: In progress; next phase.**
 
-1. **Complete:** Inspect the current Postman suites and classify their effects. The smoke and read-only/authentication subset do not create, update, or delete equipment. The full suite includes state-changing API-05, API-07, API-09, and persistent-record API-27; concurrency also needs controlled database fixtures.
+1. **Complete:** Inspect the current Postman suites and classify their effects. The smoke and read-only/authentication subset do not create, update, or delete equipment. The full suite includes state-changing API-05, API-07, API-09, and persistent-record API-27; the concurrency test now uses a dedicated local database and disposable fixtures.
 2. **Complete:** The read-only collection was run with runtime `baseUrl`, credentials, and a known equipment ID. The JUnit report records 10 request suites, 20 assertions, 0 failures, and 0 errors. A future run still requires a safe target and fresh runtime variables.
-3. **Blocked:** Configure isolated test data/database access for mutation and concurrency cases; no isolated API test database has been confirmed. Agree on cleanup, including API-27's extra record.
+3. **Complete for the concurrency integration test:** A local disposable MongoDB container and dedicated `labreserve_concurrency_test` database were used with fixture-owned cleanup. The full API regression collection still needs its own safe execution plan and cleanup, including API-27's extra record.
 4. **Blocked:** Run required API cases after the safe database and runtime variables are ready; record actual pass/fail or blocked outcomes separately from historical observations and collection definitions.
 5. Keep execution simple; add no framework or database infrastructure unless the current project requires it.
 
@@ -68,17 +68,19 @@ The selected `createRequest()` analysis includes the CFG, cyclomatic complexity,
 
 ### Phase 5 — Concurrency and final QA evidence
 
-**Status: Blocked pending an isolated database and controlled fixtures from Phase 2.**
+**Status: Concurrency integration test implemented and verified twice against an isolated local MongoDB database; full API regression and final evidence remain pending.**
 
-1. **Blocked:** Run the required concurrency scenario with isolated fixtures and a database-backed path; no isolated API database is confirmed.
-2. **Blocked:** Record reproducible results after that scenario is actually run.
-3. **Blocked:** Consolidate the final white-box, API, CI, and SonarQube package after the pending API and concurrency evidence is available.
-4. **Blocked:** Check each explicit deliverable against the official course rubric; the rubric is not present in this repository.
-5. **Blocked:** Mark the project complete only when required evidence is present and verified.
+1. **Complete:** Two authenticated students sent concurrent requests for one disposable available equipment item through HTTP.
+2. **Complete:** Both runs verified that both requests reached the test-only claim barrier, returned one `201` and one `409`, persisted exactly one `PENDING` request tied to the winning student, and left equipment status `REQUESTED`.
+3. **Complete:** Fixture cleanup left zero users, equipment, and requests in the dedicated `labreserve_concurrency_test` database after each run. The local MongoDB 8.0 infrastructure used the dedicated `labreserve-mongodb-test` container and runtime-only `TEST_MONGODB_URI`.
+4. **Complete:** Normal Jest unit suite passed once during the 2026-10-31 documentation review: 1 suite and 14/14 tests.
+5. **Pending:** Consolidate the final white-box, API, CI, SonarQube, and concurrency evidence after the pending full API work is resolved.
+6. **Blocked:** Check each explicit deliverable against the official course rubric; the rubric is not present in this repository.
+7. **Blocked:** Mark the project complete only when required evidence is present and verified.
 
 ## Scope Control and Sign-off
 
-- The supplied Member 3 task list names Newman/CI, SonarQube, concurrency, and final evidence. Initial SonarQube scanning and available evidence are complete; Newman CI, concurrency, and final evidence remain pending. The official course rubric was not found in the repository, so confirm exact grading scope and evidence format before final sign-off. Do not mark an explicit task-list deliverable optional without that confirmation.
+- The supplied Member 3 task list names Newman/CI, SonarQube, concurrency, and final evidence. Initial SonarQube scanning and the single concurrency scenario are complete with evidence; Newman CI and final integrated evidence remain pending. The official course rubric was not found in the repository, so confirm exact grading scope and evidence format before final sign-off. Do not mark an explicit task-list deliverable optional without that confirmation.
 - Assignment requirements take priority over optional industry enhancements.
 - Do not target 100% whole-controller coverage unless the rubric explicitly requires it.
 - Mocked unit tests and coverage generation do not need a separate database; isolate database-backed mutation and concurrency tests.
@@ -97,9 +99,12 @@ The selected `createRequest()` analysis includes the CFG, cyclomatic complexity,
 - Read-only execution report: `QA/api/api-regression-results.md` and `postman/reports/QA-ReadOnly-Regression-results.xml`
 - SonarQube scan measures and limitations: `QA/sonarqube/scan-report.md`
 - SonarQube findings and suggested review actions: `QA/sonarqube/findings.md`
+- Concurrency integration design and results: `QA/concurrency/request-concurrency-test.md`
+- Standalone concurrency report: `QA/concurrency/concurrency-testing-report.md`
+- QA evidence index: `QA/README.md`
 
 ## Learning Notes
 
 - A control-flow graph makes a function's decisions and execution paths explicit.
 - Cyclomatic complexity estimates the number of independent paths in the chosen graph model.
-- Mocked controller tests can check business logic without connecting to the database; live API and concurrency tests need a separate safety plan.
+- Mocked controller tests check selected logic without a database. The local concurrency integration test has its own database safeguards; full Postman mutation testing still requires an isolated target and cleanup plan.

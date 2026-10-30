@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest --runInBand",
+    "test:concurrency": "jest --config jest.integration.config.js --runInBand",
     "test:api:smoke": "newman run \"..\\postman\\exports\\QA-Smoke.postman_collection.json\" -e \"..\\postman\\exports\\LabReserve Newman.environment.json\" --env-var \"baseUrl=http://localhost:5000\" --reporters cli,junit --reporter-junit-export \"..\\postman\\reports\\QA-Smoke-results.xml\"",
     "seed:admin": "node scripts/seedAdmin.js",
     "seed:equipment": "node scripts/seedEquipment.js"

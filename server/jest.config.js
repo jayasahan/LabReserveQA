@@ -1,5 +1,6 @@
 module.exports = {
   testEnvironment: 'node',
   clearMocks: true,
-  roots: ['<rootDir>/tests']
+  roots: ['<rootDir>/tests'],
+  testPathIgnorePatterns: ['<rootDir>/tests/.*\\.integration\\.test\\.js$']
 }

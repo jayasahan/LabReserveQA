@@ -35,7 +35,7 @@ These are small extensions to the required cases, not separate framework feature
 
 Use a plain mock `req` and a response object whose `status()` and `json()` methods can be asserted. Mock `Equipment` and `Request` model methods rather than connecting to MongoDB. The tests should verify both response values and calls made to the claim, create, populate, and rollback operations. A real database and application server are not required for these controller-level tests.
 
-The tests should not modify production logic, depend on frontend behaviour, or claim concurrency coverage. A separate API/concurrency test can be planned later.
+These mocked controller tests do not themselves prove concurrent database behavior. The separate real HTTP/MongoDB concurrency integration test is documented in [the concurrency test record](../concurrency/request-concurrency-test.md).
 
 ## Test Execution and Coverage Results
 

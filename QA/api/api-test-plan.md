@@ -2,7 +2,7 @@
 
 ## Scope
 
-This is the Postman/API automation plan for the Member 3 assignment. It covers authentication, equipment management, authorization, request workflow, and a later concurrency test. Postman collection definitions, actual API execution, and CI automation are separate deliverables and are tracked separately below.
+This is the Postman/API automation plan for the Member 3 assignment. It covers authentication, equipment management, authorization, request workflow, and a separately verified concurrency integration test. Postman collection definitions, actual API execution, and CI automation are separate deliverables and are tracked separately below.
 
 The current collection artifacts are:
 
@@ -17,8 +17,8 @@ The current collection artifacts are:
 - **Read-only/authentication subset:** `QA-ReadOnly-Regression.postman_collection.json` contains ten requests and 20 assertions: health, admin/student login, equipment list/get, unauthenticated listing, and invalid login. Login uses POST but the inspected controller only reads the user record and creates a JWT; it does not register users or mutate equipment. The recorded local JUnit result contains 10 request suites, 20 assertions, 0 failures, and 0 errors; see `postman/reports/QA-ReadOnly-Regression-results.xml` and `QA/api/api-regression-results.md`.
 - The exported Postman environment does not currently supply `baseUrl` or `equipmentId`. Provide those at runtime, along with admin/student credentials. API-04 and API-20 require a known existing equipment ID; do not substitute a guessed ID.
 - **Full regression:** The 30 numbered requests plus API Health are defined but have no new execution evidence. API-05 creates a disposable fixture, API-07 updates it, API-09 deletes it, and API-27 creates a separate record that persists unless the test database is discarded or that record is cleaned up. Other mutation-method negative/invalid requests assert rejection and should not change records if the API behaves as expected. Treat the suite as state-changing until safely run against isolated fixtures.
-- The Jest tests mock the `Equipment` and `Request` models and do not connect to MongoDB. The API server calls `mongoose.connect()` with `MONGODB_URI` before it listens, so any live API execution requires a configured database. No isolated API test database has been confirmed, and no database was connected during this audit.
-- GitHub Actions Jest workflow run [#2](https://github.com/jayasahan/LabReserveQA/actions/runs/40759976311) is verified successful and uploaded `jest-coverage-2`. The workflow runs Jest only; it does not run Newman. The initial local SonarQube scan and available measures are documented in `QA/sonarqube/`; Newman CI, concurrency testing, and final integrated API evidence remain pending. The official rubric's exact scope and evidence format still need confirmation.
+- The white-box Jest tests mock the `Equipment` and `Request` models and do not connect to MongoDB. The separate concurrency integration test uses a dedicated local database and is documented under `QA/concurrency/`. The API server calls `mongoose.connect()` with `MONGODB_URI` before it listens, so live Postman execution requires a configured database.
+- GitHub Actions Jest workflow run [#2](https://github.com/jayasahan/LabReserveQA/actions/runs/40759976311) is verified successful and uploaded `jest-coverage-2`. The workflow runs Jest only; it does not run Newman. The initial local SonarQube scan and available measures are documented in `QA/sonarqube/`. Newman CI, a fresh full API regression execution, and final integrated API evidence remain pending. The official rubric's exact scope and evidence format still need confirmation.
 
 The official course rubric was not found as a separate file in this repository. Confirm which listed assignment items are graded requirements with the supplied assignment sheet or lecturer; do not treat an explicit requirement as optional, and do not add industry extras just to increase scope.
 
@@ -54,7 +54,7 @@ For a student attempting an equipment mutation, use the actual admin-only routes
 |---|---|
 | Admin user | The repository provides `server/scripts/seedAdmin.js`. The admin must be created from `ADMIN_NAME`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` environment values. Current database presence was not verified. |
 | Student 1 | Must be created with `POST /api/auth/register` or already exist. Registration always assigns `STUDENT`; the client cannot choose `ADMIN`. |
-| Student 2 | Must be created separately for the later concurrency test. It must have a different email from Student 1. |
+| Student 2 | A second distinct student is required for concurrency; the integration test creates its own isolated student fixtures. |
 
 ### Equipment
 
@@ -95,7 +95,7 @@ A separate rejection test can verify `PENDING -> REJECTED` and `REQUESTED -> AVA
 - `JWT_SECRET` is required for login tokens and protected routes.
 - `PORT` is optional; the server defaults to `5000`.
 - Admin seeding additionally requires the three `ADMIN_*` values.
-- There is no reset endpoint. Use dedicated test records and reset them through the normal lifecycle, or clean the test database/records before a repeat run.
+- There is no reset endpoint. The concurrency integration test uses its own dedicated local database and fixture cleanup. This does not establish a database or cleanup plan for the full Postman suite.
 - Do not reuse equipment that is `REQUESTED` or `BORROWED` for a test that expects `AVAILABLE`.
 
 ### Authentication and variables
@@ -126,22 +126,14 @@ The IDs in this early design table are provisional draft IDs and do not match th
 
 API-09 should be split into separate Postman requests when implemented so each expected status is unambiguous. Do not combine invalid-ID, conflict, and forbidden cases into one assertion.
 
-## 4. Later Concurrency Test Plan
+## 4. Completed Local Concurrency Integration Test
 
-The later concurrency test will use two different students and one dedicated `AVAILABLE` equipment item:
+The concurrency scenario was executed twice against a dedicated local MongoDB 8.0 test database. A test-only barrier confirms that both authenticated requests reach the point immediately before the real atomic claim before either proceeds. Each run asserted one `201`, one `409`, exactly one persisted request in `PENDING` status, the winning student's identity, and equipment status `REQUESTED`. See the [concurrency design and run record](../concurrency/request-concurrency-test.md) and [standalone report](../concurrency/concurrency-testing-report.md).
 
-1. Obtain valid Bearer tokens for Student 1 and Student 2.
-2. Confirm the same equipment is `AVAILABLE`.
-3. Send two `POST /api/requests` calls as close together as the test tool permits, with the same `equipmentId`.
-4. Assert that exactly one request succeeds with `201`.
-5. Assert that the losing request receives the conflict response expected from the controller, currently `409` when the equipment exists but is no longer available.
-6. Query the equipment and requests afterwards.
-
-The source uses an atomic equipment update matching `_id` and `status: 'AVAILABLE'`, so the intended contract is exactly one successful claim, one active request, and equipment left in a consistent `REQUESTED` state. This must be confirmed by the later real API test; it has not been run yet.
+This verifies the documented two-student scenario locally. It is not a load test, does not cover larger concurrent groups, and has not run in GitHub Actions.
 
 ## 5. Uncertainties for Team Confirmation
 
-- The current database contents and whether the seeded admin/equipment records already exist were not verified.
-- Before API execution, verify the target database and runtime credentials are safe. State-changing full-regression requests require an isolated test database and disposable fixtures; a read-only/authentication run still requires checking that its target is safe.
-- The exact Postman runner or execution environment for sending two near-simultaneous requests still needs to be selected.
-- Cleanup ownership should be agreed so API runs do not affect shared development data.
+- The current application database contents and whether the seeded admin/equipment records exist are not verified. The isolated concurrency database is not evidence about application database state.
+- Before Postman execution, verify the target database and runtime credentials are safe. State-changing full-regression requests require their own isolated database and disposable fixtures; the concurrency database is used only by that test.
+- The full Postman suite still needs its own isolated API database and reviewed fixture lifecycle before execution. The concurrency test's dedicated database does not establish safety for the full suite.

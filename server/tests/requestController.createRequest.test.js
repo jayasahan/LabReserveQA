@@ -66,7 +66,7 @@ describe('createRequest()', () => {
     expect(Equipment.findOneAndUpdate).toHaveBeenCalledWith(
       { _id: equipmentId, status: 'AVAILABLE' },
       { $set: { status: 'REQUESTED' } },
-      { new: true }
+      { returnDocument: 'after' }
     )
     expect(Request.create).toHaveBeenCalledWith({
       student: studentId,

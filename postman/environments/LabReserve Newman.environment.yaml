@@ -3,7 +3,7 @@ values:
   - key: baseUrl
     value: ''
   - key: adminToken
-    value: ''
+    secret: true
   - key: studentToken
     value: ''
   - key: equipmentId

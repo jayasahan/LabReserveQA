@@ -10,7 +10,7 @@ It is intended to provide a quick confidence check after backend changes and to 
 
 ## 2. Why we ran this subset
 
-The full Postman collection includes state-changing scenarios such as creating, updating, and deleting equipment. The current backend uses MongoDB Atlas, and an isolated test database or reliable test-data cleanup process has not yet been established.
+The full Postman collection includes state-changing scenarios such as creating, updating, and deleting equipment. The recorded read-only run used the backend's configured database; its isolation was not established by that run. A separate local database now exists for the concurrency integration test, but it is not configured as a safe target for the full Postman collection.
 
 Running the full suite against a shared development database could leave test records behind or change existing data. For that reason, the first automated suite deliberately focuses on essential health, authentication, authorization, and equipment-read behavior.
 
@@ -99,7 +99,7 @@ This is a **read-only equipment regression suite**, not a completely side-effect
 2. **Only selected endpoints are covered.** The suite does not validate every API route, input-validation case, business rule, or error condition in the full collection.
 3. **No equipment mutations are tested here.** Create, update, and delete workflows need a separate controlled suite.
 4. **The selected equipment ID is an external prerequisite.** The suite requires a valid existing record supplied at runtime.
-5. **Database isolation is not established.** The local backend currently connects to the configured MongoDB Atlas database. This suite avoids intentional equipment writes, but that alone is not a guarantee of zero database side effects.
+5. **Database isolation was not established for the recorded run.** The suite avoids intentional equipment writes, but that alone is not a guarantee of zero database side effects. The separate concurrency test database does not establish isolation for Postman runs.
 6. **CI has not yet been validated.** A successful local run does not prove that GitHub Actions can start the backend, connect to a suitable database, or access the required secrets.
 7. **Performance results are indicative only.** One short run is not a load, stress, or performance test.
 8. **A passing test is only as strong as its assertions.** These assertions check selected response codes, fields, and identity/role behavior; they do not prove all response data is correct or secure.

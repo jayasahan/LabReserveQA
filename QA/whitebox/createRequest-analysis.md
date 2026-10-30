@@ -211,10 +211,11 @@ Nine independent paths are sufficient for the selected CFG basis set, but they d
 - Independent path identification: **COMPLETE** under the final CFG convention.
 - Test implementation: **COMPLETE**; first Jest version executed with 14 passing tests.
 - Initial coverage measurement and interpretation: **COMPLETE**; whole-file coverage was reported and `createRequest()` was analysed separately.
-- API automation: **COLLECTIONS DEFINED; API execution remains pending**
+- API automation: **READ-ONLY SUBSET EXECUTED LOCALLY; full API-01–API-30 execution remains pending**
+- Concurrency integration: **TWO LOCAL RUNS PASSED against dedicated MongoDB; see `QA/concurrency/`**
 - Jest CI workflow: **MERGED; GitHub Actions run #2 succeeded and uploaded `jest-coverage-2`**
 - SonarQube: **INITIAL LOCAL ANALYSIS COMPLETE; available metrics and findings documented under `QA/sonarqube/`; no post-fix scan**
 
 ## 12. Next Step
 
-The selected white-box analysis includes a Mermaid CFG, node and edge tables, both complexity calculations, nine independent paths, and a mapping from P1–P9 to WB-01–WB-09 in the test-case plan. Do not add tests solely to raise whole-file coverage. First compare remaining QA work with the official assignment rubric, then run API scenarios only with the required safe environment and fixtures.
+The selected white-box analysis includes a Mermaid CFG, node and edge tables, both complexity calculations, nine independent paths, and a mapping from P1–P9 to WB-01–WB-09 in the test-case plan. Do not add tests solely to raise whole-file coverage. Compare remaining QA work with the official assignment rubric; run the full API collection only with the required safe environment and fixtures.

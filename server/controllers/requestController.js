@@ -2,6 +2,18 @@ const mongoose = require('mongoose')
 const Equipment = require('../models/Equipment')
 const Request = require('../models/Request')
 
+let testClaimBarrier = null
+
+function setTestClaimBarrier(barrier) {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('The equipment claim barrier is available only in test mode.')
+  }
+  if (barrier !== null && typeof barrier !== 'function') {
+    throw new TypeError('The equipment claim barrier must be a function or null.')
+  }
+  testClaimBarrier = barrier
+}
+
 function isValidId(id) {
   return mongoose.Types.ObjectId.isValid(id)
 }
@@ -44,10 +56,11 @@ async function createRequest(req, res) {
 
   try {
     // MongoDB checks the ID and availability in one operation, so only one requester can claim the item.
+    if (testClaimBarrier) await testClaimBarrier()
     const claimedEquipment = await Equipment.findOneAndUpdate(
       { _id: equipmentId, status: 'AVAILABLE' },
       { $set: { status: 'REQUESTED' } },
-      { new: true },
+      { returnDocument: 'after' },
     )
 
     if (!claimedEquipment) {
@@ -236,5 +249,6 @@ module.exports = {
   getAllRequests,
   approveRequest,
   rejectRequest,
-  returnRequest
+  returnRequest,
+  setTestClaimBarrier
 }
