@@ -1,0 +1,4 @@
+Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Sent KB/sec
+POST Login,10,209,151,211,211,628,141,628,0.000%,.08101,0.05,0.02
+GET Equipment List,10,206,187,204,204,461,144,461,0.000%,.08140,0.37,0.03
+TOTAL,20,207,169,211,461,628,141,628,0.000%,.16110,0.41,0.05
